@@ -21,6 +21,10 @@ export const createUserMw = asyncMw(async (req, res, next) => {
 });
 
 export const updateUserMw = asyncMw(async (req, res, next) => {
+  // Only admin and the user himself can update the user
+  if (!req.isAdmin && req.userAuth.id !== +req.params.id)
+    return res.status(403).json({ message: 'Forbidden' });
+
   const user = await repository.user.resourceToModel(req.body);
 
   req.user = await repository.user.update(req.params.id, user);
@@ -29,6 +33,10 @@ export const updateUserMw = asyncMw(async (req, res, next) => {
 });
 
 export const deleteUserMw = asyncMw(async (req, res) => {
+  // Only admin and the user himself can delete the user account
+  if (!req.isAdmin && req.userAuth.id !== +req.params.id)
+    return res.status(403).json({ message: 'Forbidden' });
+
   await repository.user.delete(req.params.id);
 
   return res.json({
@@ -37,7 +45,21 @@ export const deleteUserMw = asyncMw(async (req, res) => {
 });
 
 export const getUserMw = asyncMw(async (req, res, next) => {
-  req.user = await repository.user.findOne(req.params.id);
+  const options = {
+    include: {
+      profile: true,
+    },
+  };
+
+  // Get the user from the database base on the id or the username
+  const isUsingId = !_.isNaN(+_.get(req, 'params.id'));
+  const condition = isUsingId ? { id: +req.params.id } : { username: req.params.id };
+
+  const user = await repository.user.findOne(condition, options);
+
+  if (!user) return res.status(404).json({ message: 'User not found' });
+
+  req.user = user;
 
   return next();
 });
