@@ -3,7 +3,8 @@ import { PrismaRepoConfig } from 'prisma-repo';
 
 const config: PrismaRepoConfig = {
   overwrite: {
-    baseRepository: true,
+    baseRepository: false,
+    repository: false,
   },
   repositoryPath: 'src/repository',
   prismaLogger: true,
