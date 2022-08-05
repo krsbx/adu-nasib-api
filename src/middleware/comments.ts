@@ -5,7 +5,7 @@ import repository from '../repository';
 export const createCommentMw = asyncMw(async (req, res, next) => {
   const comment = await repository.comment.resourceToModel(req.body);
 
-  if (!comment.userId) comment.userId = req.userAuth.id;
+  if (!req.isAdmin) comment.userId = req.userAuth.id;
 
   req.comment = await repository.comment.create(comment);
 
@@ -13,6 +13,10 @@ export const createCommentMw = asyncMw(async (req, res, next) => {
 });
 
 export const updateCommentMw = asyncMw(async (req, res, next) => {
+  // Only admin and the user himself can update the user comment
+  if (!req.isAdmin && req.userAuth.id !== req.comment.userId)
+    return res.status(403).json({ message: 'Forbidden' });
+
   const comment = await repository.comment.resourceToModel(req.body);
 
   req.comment = await repository.comment.update(req.params.id, comment);
@@ -21,6 +25,10 @@ export const updateCommentMw = asyncMw(async (req, res, next) => {
 });
 
 export const deleteCommentMw = asyncMw(async (req, res) => {
+  // Only admin and the user himself can delete the user comment
+  if (!req.isAdmin && req.userAuth.id !== req.comment.userId)
+    return res.status(403).json({ message: 'Forbidden' });
+
   await repository.comment.delete(req.params.id);
 
   return res.json({
@@ -29,11 +37,15 @@ export const deleteCommentMw = asyncMw(async (req, res) => {
 });
 
 export const getCommentMw = asyncMw(async (req, res, next) => {
-  req.comment = await repository.comment.findOne(req.params.id, {
+  const comment = await repository.comment.findOne(req.params.id, {
     include: {
       user: true,
     },
   });
+
+  if (!comment) return res.status(404).json({ message: 'Comment not found' });
+
+  req.comment = comment;
 
   return next();
 });

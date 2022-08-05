@@ -5,7 +5,7 @@ import repository from '../repository';
 export const createPostMw = asyncMw(async (req, res, next) => {
   const post = await repository.post.resourceToModel(req.body);
 
-  if (!post.userId) post.userId = req.userAuth.id;
+  if (!req.isAdmin) post.userId = req.userAuth.id;
 
   req.post = await repository.post.create(post);
 
@@ -13,6 +13,10 @@ export const createPostMw = asyncMw(async (req, res, next) => {
 });
 
 export const updatePostMw = asyncMw(async (req, res, next) => {
+  // Only admin and the user himself can update the user post
+  if (!req.isAdmin && req.userAuth.id !== req.post.userId)
+    return res.status(403).json({ message: 'Forbidden' });
+
   const post = await repository.post.resourceToModel(req.body);
 
   req.post = await repository.post.update(req.params.id, post);
@@ -21,6 +25,10 @@ export const updatePostMw = asyncMw(async (req, res, next) => {
 });
 
 export const deletePostMw = asyncMw(async (req, res) => {
+  // Only admin and the user himself can delete the user post
+  if (!req.isAdmin && req.userAuth.id !== req.post.userId)
+    return res.status(403).json({ message: 'Forbidden' });
+
   await repository.post.delete(req.params.id);
 
   return res.json({
@@ -29,11 +37,15 @@ export const deletePostMw = asyncMw(async (req, res) => {
 });
 
 export const getPostMw = asyncMw(async (req, res, next) => {
-  req.post = await repository.post.findOne(req.params.id, {
+  const post = await repository.post.findOne(req.params.id, {
     include: {
       user: true,
     },
   });
+
+  if (!post) return res.status(404).json({ message: 'Post not found' });
+
+  req.post = post;
 
   return next();
 });
