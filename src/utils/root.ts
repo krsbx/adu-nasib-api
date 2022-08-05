@@ -9,4 +9,4 @@ export default (app: Express) => {
   app.use(cors());
 
   app.get('*', queryParserMw);
-}
+};

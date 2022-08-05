@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.ts",
     "migrate": "prisma migrate dev",
+    "migrate:create": "prisma migrate dev --name",
     "migrate:reset": "prisma migrate reset",
+    "postmigrate": "prisma-repo --model-structures",
     "seed": "prisma db seed",
     "prepare": "husky install"
   },
