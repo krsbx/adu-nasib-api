@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as posts from '../middleware/posts';
+import * as auths from '../middleware/auths';
 
 const router = Router();
 
@@ -16,6 +17,6 @@ router.get('/:id', posts.getPostMw, posts.returnPostMw);
 router.patch('/:id', posts.updatePostMw, posts.returnPostMw);
 
 // DELETE /posts/:id
-router.delete('/:id', posts.deletePostMw);
+router.delete('/:id', auths.authMw, posts.getPostMw, posts.deletePostMw);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as users from '../middleware/users';
+import * as auths from '../middleware/auths';
 
 const router = Router();
 
@@ -13,9 +14,16 @@ router.get('/', users.getUsersMw, users.returnUsersMw);
 router.get('/:id', users.getUserMw, users.returnUserMw);
 
 // PATCH /users/:id
-router.patch('/:id', users.updateUserMw, users.returnUserMw);
+router.patch(
+  '/:id',
+  auths.authMw,
+  users.getUserMw,
+  users.updateUserMw,
+  users.getUserMw,
+  users.returnUserMw
+);
 
 // DELETE /users/:id
-router.delete('/:id', users.deleteUserMw);
+router.delete('/:id', auths.authMw, users.deleteUserMw);
 
 export default router;
