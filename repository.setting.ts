@@ -2,6 +2,7 @@
 import { PrismaRepoConfig } from 'prisma-repo';
 
 const config: PrismaRepoConfig = {
+  extendExpress: true,
   overwrite: {
     baseRepository: false,
     repository: false,

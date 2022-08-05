@@ -1,5 +1,6 @@
-import express, { Express } from 'express';
 import cors from 'cors';
+import express, { Express } from 'express';
+import routes from '../routes';
 import { queryParserMw } from '../middleware/queryParser';
 
 export default (app: Express) => {
@@ -9,4 +10,5 @@ export default (app: Express) => {
   app.use(cors());
 
   app.get('*', queryParserMw);
+  app.use(routes);
 };
