@@ -5,7 +5,7 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'User Updated',
+    description: 'Get user base on id',
     content: {
       'application/json': {
         schema: {
