@@ -4,33 +4,17 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'Get all comment',
+    description: 'Update post base on id',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           properties: {
-            rows: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  content: {
-                    type: 'string',
-                    example: 'Lu mah mending, lah gw ...',
-                  },
-                  userId: {
-                    type: 'number',
-                    example: 1,
-                  },
-                  postId: {
-                    type: 'number',
-                    example: 1,
-                  },
-                },
-              },
+            content: {
+              type: 'string',
+              example: 'Lu mah mending, lah gw ...',
             },
-            count: {
+            userId: {
               type: 'number',
               example: 1,
             },

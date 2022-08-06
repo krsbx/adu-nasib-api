@@ -6,9 +6,9 @@ const tag: Tag = {
   description: 'This collection is in /',
 };
 
-const comment = {
+const comments = {
   tag,
   path,
 };
 
-export default comment;
+export default comments;

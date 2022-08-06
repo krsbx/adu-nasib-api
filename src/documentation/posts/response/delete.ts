@@ -4,35 +4,15 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'Get all comment',
+    description: 'Delete post base on id',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           properties: {
-            rows: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  content: {
-                    type: 'string',
-                    example: 'Lu mah mending, lah gw ...',
-                  },
-                  userId: {
-                    type: 'number',
-                    example: 1,
-                  },
-                  postId: {
-                    type: 'number',
-                    example: 1,
-                  },
-                },
-              },
-            },
-            count: {
-              type: 'number',
-              example: 1,
+            message: {
+              type: 'string',
+              example: 'Post deleted',
             },
           },
         },

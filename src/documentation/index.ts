@@ -1,6 +1,7 @@
 import { Options } from 'swagger-jsdoc';
 import auth from './auth';
 import users from './users';
+import posts from './posts';
 import comments from './comments';
 import securities from './components/security';
 
@@ -17,10 +18,11 @@ const documentation: Options = {
         url: `http://localhost:${process.env.PORT || 3000}`,
       },
     ],
-    tags: [auth.tag, users.tag, comments.tag],
+    tags: [auth.tag, users.tag, posts.tag, comments.tag],
     paths: {
       ...auth.path,
       ...users.path,
+      ...posts.path,
       ...comments.path,
     },
     components: {
