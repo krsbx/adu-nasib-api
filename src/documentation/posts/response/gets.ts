@@ -4,7 +4,7 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'Get all comment',
+    description: 'Get all post',
     content: {
       'application/json': {
         schema: {
@@ -20,10 +20,6 @@ const response: Record<ResponseCode, Response> = {
                     example: 'Lu mah mending, lah gw ...',
                   },
                   userId: {
-                    type: 'number',
-                    example: 1,
-                  },
-                  postId: {
                     type: 'number',
                     example: 1,
                   },
