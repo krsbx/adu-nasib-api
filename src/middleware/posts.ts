@@ -19,6 +19,8 @@ export const updatePostMw = asyncMw(async (req, res, next) => {
 
   const post = await repository.post.resourceToModel(req.body);
 
+  if (post.userId) delete post.userId;
+
   req.post = await repository.post.update(req.params.id, post);
 
   return next();
@@ -51,7 +53,11 @@ export const getPostMw = asyncMw(async (req, res, next) => {
 });
 
 export const getPostsMw = asyncMw(async (req, res, next) => {
-  req.posts = await repository.post.findAll({}, req.filterQueryParams, req.query, {
+  let condition = {};
+
+  if (req.user) condition = { userId: req.user.id };
+
+  req.posts = await repository.post.findAll(condition, req.filterQueryParams, req.query, {
     user: true,
   });
 
@@ -63,7 +69,7 @@ export const returnPostMw = asyncMw(async (req, res) => {
 
   return res.json({
     ...post,
-    ...(req.post?.user ? { user: await repository.post.modelToResource(req.post.user) } : {}),
+    ...(req.post?.user ? { user: await repository.user.modelToResource(req.post.user) } : {}),
   });
 });
 
@@ -72,7 +78,7 @@ export const returnPostsMw = asyncMw(async (req, res) => {
     rows: await Promise.all(
       _.map(_.get(req.posts, 'rows', []), (post) => ({
         ...repository.post.modelToResource(post),
-        ...(post.user ? { user: repository.post.modelToResource(post.user) } : {}),
+        ...(post.user ? { user: repository.user.modelToResource(post.user) } : {}),
       }))
     ),
     count: _.get(req.posts, 'count', 0),
