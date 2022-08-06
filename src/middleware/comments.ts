@@ -6,11 +6,12 @@ import { handleZodError } from '../utils/errors';
 import { commentSchema } from '../utils/schema';
 
 export const createCommentMw = asyncMw(async (req, res, next) => {
+  if (!req.body.userId) req.body.userId = req.userAuth.id;
+  if (!req.isAdmin) req.body.userId = req.userAuth.id;
+
   try {
     const body = commentSchema.create.parse(req.body);
     const comment = await repository.comment.resourceToModel(body);
-
-    if (!req.isAdmin) comment.userId = req.userAuth.id;
 
     req.comment = await repository.comment.create(comment);
 

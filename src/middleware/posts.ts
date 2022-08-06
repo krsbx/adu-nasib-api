@@ -6,11 +6,12 @@ import { handleZodError } from '../utils/errors';
 import { postSchema } from '../utils/schema';
 
 export const createPostMw = asyncMw(async (req, res, next) => {
+  if (!req.body.userId) req.body.userId = req.userAuth.id;
+  if (!req.isAdmin) req.body.userId = req.userAuth.id;
+
   try {
     const body = postSchema.create.parse(req.body);
     const post = await repository.post.resourceToModel(body);
-
-    if (!req.isAdmin) post.userId = req.userAuth.id;
 
     req.post = await repository.post.create(post);
 
