@@ -11,22 +11,34 @@ const response: Record<ResponseCode, Response> = {
         schema: {
           type: 'object',
           properties: {
-            id: {
+            rows: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'number',
+                    example: 1,
+                  },
+                  username: {
+                    type: 'string',
+                    example: 'username',
+                  },
+                  email: {
+                    type: 'string',
+                    example: 'user@user.com',
+                  },
+                  role: {
+                    type: 'string',
+                    enum: [USER_ROLE.USER, USER_ROLE.ADMIN],
+                    example: USER_ROLE.USER,
+                  },
+                },
+              },
+            },
+            count: {
               type: 'number',
               example: 1,
-            },
-            username: {
-              type: 'string',
-              example: 'username',
-            },
-            email: {
-              type: 'string',
-              example: 'user@user.com',
-            },
-            role: {
-              type: 'string',
-              enum: [USER_ROLE.USER, USER_ROLE.ADMIN],
-              example: USER_ROLE.USER,
             },
           },
         },
