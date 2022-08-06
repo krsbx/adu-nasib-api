@@ -38,7 +38,22 @@ const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.BAD_REQUEST]: {} as Response,
   [RESPONSE_CODE.UNAUTHORIZED]: {} as Response,
   [RESPONSE_CODE.FORBIDDEN]: {} as Response,
-  [RESPONSE_CODE.NOT_FOUND]: {} as Response,
+  [RESPONSE_CODE.NOT_FOUND]: {
+    description: 'User not found',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              example: 'User not found',
+            },
+          },
+        },
+      },
+    },
+  } as Response,
   [RESPONSE_CODE.INTERNAL_SERVER_ERROR]: {
     description: 'User with this email already exists | Internal Server Error',
   } as Response,

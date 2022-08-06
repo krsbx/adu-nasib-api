@@ -4,20 +4,23 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'OK',
+    description: 'Get comment base on id',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           properties: {
-            id: {
+            content: {
+              type: 'string',
+              example: 'Lu mah mending, lah gw ...',
+            },
+            userId: {
               type: 'number',
               example: 1,
             },
-            token: {
-              type: 'string',
-              example:
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2NDkyMDg0MDUsImV4cCI6MTY0OTIxOTIwNX0.3f5FUGov9xc3EJpxqU7kOrzLf3CTabI-_V7oS40Fz2I',
+            postId: {
+              type: 'number',
+              example: 1,
             },
           },
         },
@@ -27,25 +30,10 @@ const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.CREATED]: {} as Response,
   [RESPONSE_CODE.NO_CONTENT]: {} as Response,
   [RESPONSE_CODE.BAD_REQUEST]: {} as Response,
-  [RESPONSE_CODE.UNAUTHORIZED]: {
-    description: 'Invalid user credentials',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            message: {
-              type: 'string',
-              example: 'Invalid Password',
-            },
-          },
-        },
-      },
-    },
-  } as Response,
+  [RESPONSE_CODE.UNAUTHORIZED]: {} as Response,
   [RESPONSE_CODE.FORBIDDEN]: {} as Response,
   [RESPONSE_CODE.NOT_FOUND]: {
-    description: 'User not found',
+    description: 'Comment not found',
     content: {
       'application/json': {
         schema: {
@@ -53,14 +41,16 @@ const response: Record<ResponseCode, Response> = {
           properties: {
             message: {
               type: 'string',
-              example: 'User not found',
+              example: 'Comment not found',
             },
           },
         },
       },
     },
   } as Response,
-  [RESPONSE_CODE.INTERNAL_SERVER_ERROR]: {} as Response,
+  [RESPONSE_CODE.INTERNAL_SERVER_ERROR]: {
+    description: 'Internal Server Error',
+  } as Response,
 };
 
 export default response;

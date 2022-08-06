@@ -4,7 +4,20 @@ import { ResponseCode } from '../../interface';
 
 const response: Record<ResponseCode, Response> = {
   [RESPONSE_CODE.OK]: {
-    description: 'User deleted successfully',
+    description: 'Delete user base on id',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              example: 'User deleted',
+            },
+          },
+        },
+      },
+    },
   } as Response,
   [RESPONSE_CODE.CREATED]: {} as Response,
   [RESPONSE_CODE.NO_CONTENT]: {} as Response,

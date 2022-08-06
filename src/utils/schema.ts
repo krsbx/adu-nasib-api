@@ -15,6 +15,7 @@ export const commentSchema = {
 export const postSchema = {
   create: z.object({
     content: z.string(),
+    userId: z.number(),
   }),
   update: z.object({
     content: z.string(),

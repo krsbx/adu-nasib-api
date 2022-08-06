@@ -2,13 +2,13 @@ import { Tag } from 'swagger-jsdoc';
 import path from './path';
 
 const tag: Tag = {
-  name: 'User Collection',
+  name: 'Comment Collection',
   description: 'This collection is in /',
 };
 
-const user = {
+const comment = {
   tag,
   path,
 };
 
-export default user;
+export default comment;
