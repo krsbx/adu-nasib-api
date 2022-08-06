@@ -1,15 +1,27 @@
 import _ from 'lodash';
+import { ZodError } from 'zod';
 import asyncMw from 'express-asyncmw';
 import repository from '../repository';
+import { handleZodError } from '../utils/errors';
+import { postSchema } from '../utils/schema';
 
 export const createPostMw = asyncMw(async (req, res, next) => {
-  const post = await repository.post.resourceToModel(req.body);
+  try {
+    const body = postSchema.create.parse(req.body);
+    const post = await repository.post.resourceToModel(body);
 
-  if (!req.isAdmin) post.userId = req.userAuth.id;
+    if (!req.isAdmin) post.userId = req.userAuth.id;
 
-  req.post = await repository.post.create(post);
+    req.post = await repository.post.create(post);
 
-  return next();
+    return next();
+  } catch (err) {
+    if (err instanceof ZodError) {
+      return handleZodError(err, res);
+    }
+
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 export const updatePostMw = asyncMw(async (req, res, next) => {
