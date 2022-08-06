@@ -53,9 +53,7 @@ export type ModelStructure = {
 
 export type ModelName = keyof ModelStructure;
 
-export type ModelScalarFields<T extends keyof ModelStructure> = Prisma.Enumerable<
-  keyof ModelStructure[T]
->;
+export type ModelScalarFields<T extends keyof ModelStructure> = Prisma.Enumerable<keyof ModelStructure[T]>;
 
 export type ModelDelegate = Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined;
 
