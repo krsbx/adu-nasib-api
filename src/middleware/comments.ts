@@ -19,6 +19,9 @@ export const updateCommentMw = asyncMw(async (req, res, next) => {
 
   const comment = await repository.comment.resourceToModel(req.body);
 
+  if (comment.postId) delete comment.postId;
+  if (comment.userId) delete comment.userId;
+
   req.comment = await repository.comment.update(req.params.id, comment);
 
   return next();
@@ -51,7 +54,11 @@ export const getCommentMw = asyncMw(async (req, res, next) => {
 });
 
 export const getCommentsMw = asyncMw(async (req, res, next) => {
-  req.comments = await repository.comment.findAll({}, req.filterQueryParams, req.query, {
+  let condition = {};
+
+  if (req.user) condition = { userId: req.user.id };
+
+  req.comments = await repository.comment.findAll(condition, req.filterQueryParams, req.query, {
     user: true,
   });
 
@@ -63,9 +70,7 @@ export const returnCommentMw = asyncMw(async (req, res) => {
 
   return res.json({
     ...comment,
-    ...(req.comment?.user
-      ? { user: await repository.comment.modelToResource(req.comment.user) }
-      : {}),
+    ...(req.comment?.user ? { user: await repository.user.modelToResource(req.comment.user) } : {}),
   });
 });
 
@@ -74,7 +79,7 @@ export const returnCommentsMw = asyncMw(async (req, res) => {
     rows: await Promise.all(
       _.map(_.get(req.comments, 'rows', []), (comment) => ({
         ...repository.comment.modelToResource(comment),
-        ...(comment.user ? { user: repository.comment.modelToResource(comment.user) } : {}),
+        ...(comment.user ? { user: repository.user.modelToResource(comment.user) } : {}),
       }))
     ),
     count: _.get(req.comments, 'count', 0),
