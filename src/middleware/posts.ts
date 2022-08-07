@@ -89,9 +89,9 @@ export const returnPostMw = asyncMw(async (req, res) => {
 export const returnPostsMw = asyncMw(async (req, res) => {
   return res.json({
     rows: await Promise.all(
-      _.map(_.get(req.posts, 'rows', []), (post) => ({
-        ...repository.post.modelToResource(post),
-        ...(post.user ? { user: repository.user.modelToResource(post.user) } : {}),
+      _.map(_.get(req.posts, 'rows', []), async (post) => ({
+        ...(await repository.post.modelToResource(post)),
+        ...(post.user ? { user: await repository.user.modelToResource(post.user) } : {}),
       }))
     ),
     count: _.get(req.posts, 'count', 0),
