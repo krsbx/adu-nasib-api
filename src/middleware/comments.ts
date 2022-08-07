@@ -90,9 +90,9 @@ export const returnCommentMw = asyncMw(async (req, res) => {
 export const returnCommentsMw = asyncMw(async (req, res) => {
   return res.json({
     rows: await Promise.all(
-      _.map(_.get(req.comments, 'rows', []), (comment) => ({
-        ...repository.comment.modelToResource(comment),
-        ...(comment.user ? { user: repository.user.modelToResource(comment.user) } : {}),
+      _.map(_.get(req.comments, 'rows', []), async (comment) => ({
+        ...(await repository.comment.modelToResource(comment)),
+        ...(comment.user ? { user: await repository.user.modelToResource(comment.user) } : {}),
       }))
     ),
     count: _.get(req.comments, 'count', 0),
