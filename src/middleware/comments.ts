@@ -13,7 +13,11 @@ export const createCommentMw = asyncMw(async (req, res, next) => {
     const body = commentSchema.create.parse(req.body);
     const comment = await repository.comment.resourceToModel(body);
 
-    req.comment = await repository.comment.create(comment);
+    req.comment = await repository.comment.create(comment, {
+      include: {
+        user: true,
+      },
+    });
 
     return next();
   } catch (err) {

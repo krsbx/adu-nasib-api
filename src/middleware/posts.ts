@@ -13,7 +13,11 @@ export const createPostMw = asyncMw(async (req, res, next) => {
     const body = postSchema.create.parse(req.body);
     const post = await repository.post.resourceToModel(body);
 
-    req.post = await repository.post.create(post);
+    req.post = await repository.post.create(post, {
+      include: {
+        user: true,
+      },
+    });
 
     return next();
   } catch (err) {
