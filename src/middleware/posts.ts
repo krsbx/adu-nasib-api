@@ -66,6 +66,12 @@ export const getPostMw = asyncMw(async (req, res, next) => {
 
   req.post = post;
 
+  req.post.replies = await repository.comment.model.count({
+    where: {
+      postId: req.post.id,
+    },
+  });
+
   return next();
 });
 
@@ -82,6 +88,19 @@ export const getPostsMw = asyncMw(async (req, res, next) => {
       createdAt: 'desc',
     },
   });
+
+  if (!_.isEmpty(req.posts) && req.posts.count > 0) {
+    await Promise.all(
+      _.map(req.posts.rows, async (post) => {
+        // eslint-disable-next-line no-param-reassign
+        post.replies = await repository.comment.model.count({
+          where: {
+            postId: post.id,
+          },
+        });
+      })
+    );
+  }
 
   return next();
 });

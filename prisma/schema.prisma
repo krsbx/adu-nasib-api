@@ -49,6 +49,8 @@ model Post {
   id        Int      @id @default(autoincrement())
   content   String
   userId    Int
+  likes     Int      @default(0)
+  dislikes  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -63,6 +65,8 @@ model Comment {
   content   String
   postId    Int
   userId    Int
+  likes     Int      @default(0)
+  dislikes  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
