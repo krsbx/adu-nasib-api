@@ -72,6 +72,33 @@ export const getPostMw = asyncMw(async (req, res, next) => {
     },
   });
 
+  req.post.likes = await repository.like.post.model.count({
+    where: {
+      postId: post.id,
+    },
+  });
+
+  // eslint-disable-next-line no-param-reassign
+  req.post.dislikes = await repository.dislike.post.model.count({
+    where: {
+      postId: post.id,
+    },
+  });
+
+  // eslint-disable-next-line no-param-reassign
+  req.post.isLiked = !_.isEmpty(req.userAuth)
+    ? !!(await repository.like.post.findOne({
+        userId: req.userAuth.id,
+      }))
+    : false;
+
+  // eslint-disable-next-line no-param-reassign
+  req.post.isDisliked = !_.isEmpty(req.userAuth)
+    ? !!(await repository.dislike.post.findOne({
+        userId: req.userAuth.id,
+      }))
+    : false;
+
   return next();
 });
 
@@ -98,6 +125,34 @@ export const getPostsMw = asyncMw(async (req, res, next) => {
             postId: post.id,
           },
         });
+
+        // eslint-disable-next-line no-param-reassign
+        post.likes = await repository.like.post.model.count({
+          where: {
+            postId: post.id,
+          },
+        });
+
+        // eslint-disable-next-line no-param-reassign
+        post.dislikes = await repository.dislike.post.model.count({
+          where: {
+            postId: post.id,
+          },
+        });
+
+        // eslint-disable-next-line no-param-reassign
+        post.isLiked = !_.isEmpty(req.userAuth)
+          ? !!(await repository.like.post.findOne({
+              userId: req.userAuth.id,
+            }))
+          : false;
+
+        // eslint-disable-next-line no-param-reassign
+        post.isDisliked = !_.isEmpty(req.userAuth)
+          ? !!(await repository.dislike.post.findOne({
+              userId: req.userAuth.id,
+            }))
+          : false;
       })
     );
   }
@@ -123,5 +178,49 @@ export const returnPostsMw = asyncMw(async (req, res) => {
       }))
     ),
     count: _.get(req.posts, 'count', 0),
+  });
+});
+
+export const likePostMw = asyncMw(async (req, res) => {
+  const resource = {
+    postId: req.post.id,
+    userId: req.userAuth.id,
+  };
+
+  const like = await repository.like.post.findOne(_.pick(resource, ['userId']));
+  const dislike = await repository.dislike.post.findOne(_.pick(resource, ['userId']));
+
+  if (like) await repository.like.post.delete(like.id);
+  else {
+    await repository.like.post.create(resource);
+
+    if (dislike) await repository.dislike.post.delete(dislike.id);
+  }
+
+  res.json({
+    isLiked: !like,
+    isDisliked: dislike,
+  });
+});
+
+export const dislikePostMw = asyncMw(async (req, res) => {
+  const resource = {
+    postId: req.post.id,
+    userId: req.userAuth.id,
+  };
+
+  const like = await repository.like.post.findOne(_.pick(resource, ['userId']));
+  const dislike = await repository.dislike.post.findOne(_.pick(resource, ['userId']));
+
+  if (dislike) await repository.dislike.post.delete(dislike.id);
+  else {
+    await repository.dislike.post.create(resource);
+
+    if (like) await repository.like.post.delete(like.id);
+  }
+
+  res.json({
+    isLiked: like,
+    isDisliked: !dislike,
   });
 });

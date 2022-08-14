@@ -24,9 +24,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile  Profile?
-  posts    Post[]
-  comments Comment[]
+  profile        Profile?
+  posts          Post[]
+  comments       Comment[]
+  PostLike       PostLike[]
+  CommentLike    CommentLike[]
+  PostDislike    PostDislike[]
+  CommentDislike CommentDislike[]
 
   @@map("users")
 }
@@ -49,13 +53,13 @@ model Post {
   id        Int      @id @default(autoincrement())
   content   String
   userId    Int
-  likes     Int      @default(0)
-  dislikes  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comments Comment[]
-  user     User      @relation(fields: [userId], references: [id], onDelete: NoAction)
+  comments    Comment[]
+  user        User          @relation(fields: [userId], references: [id], onDelete: NoAction)
+  PostLike    PostLike[]
+  PostDislike PostDislike[]
 
   @@map("posts")
 }
@@ -65,11 +69,65 @@ model Comment {
   content   String
   postId    Int
   userId    Int
-  likes     Int      @default(0)
-  dislikes  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post           Post             @relation(fields: [postId], references: [id], onDelete: NoAction)
+  user           User             @relation(fields: [userId], references: [id], onDelete: NoAction)
+  CommentLike    CommentLike[]
+  CommentDislike CommentDislike[]
+
+  @@map("comments")
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   post Post @relation(fields: [postId], references: [id], onDelete: NoAction)
   user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@map("post-likes")
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: NoAction)
+  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@map("comment-likes")
+}
+
+model PostDislike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@map("post-dislikes")
+}
+
+model CommentDislike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: NoAction)
+  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@map("comment-dislikes")
 }

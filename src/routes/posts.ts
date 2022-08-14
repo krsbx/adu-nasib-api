@@ -26,4 +26,10 @@ router.patch(
 // DELETE /posts/:id
 router.delete('/:id', auths.authMw, posts.getPostMw, posts.deletePostMw);
 
+// POST /posts/:id/like
+router.post('/:id/like', auths.authMw, posts.getPostMw, posts.likePostMw);
+
+// POST /posts/:id/dislike
+router.post('/:id/dislike', auths.authMw, posts.getPostMw, posts.dislikePostMw);
+
 export default router;
