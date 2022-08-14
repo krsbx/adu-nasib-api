@@ -6,19 +6,28 @@ import { PrismaClient, Prisma, User, Profile, Post, Comment, PostLike, CommentLi
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyRecord = Record<string, any>;
 
-export interface BaseOption<Include, Select> {
+export type BaseOption<Include, Select> = {
   include?: Include;
   select?: Select;
-}
+};
 
-export interface Find<Select, Include, Cursor, Order, Distinct>
-  extends BaseOption<Include, Select> {
+export type Find<Select, Include, Cursor, Order, Distinct> = BaseOption<Include, Select> & {
   cursor?: Cursor;
   take?: number;
   skip?: number;
   orderBy?: Prisma.Enumerable<Order>;
   distinct?: Distinct;
-}
+};
+
+export type CountArgs<Select, Cursor, Order, Distinct> = Omit<
+  Find<Select, never, Cursor, Order, Distinct>,
+  'include'
+>;
+
+export type Aggregate<Cursor, Order, Distinct> = Omit<
+  CountArgs<never, Cursor, Order, Distinct>,
+  'select' | 'distinct'
+>;
 
 export const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],

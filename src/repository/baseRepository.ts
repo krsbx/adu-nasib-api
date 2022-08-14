@@ -10,8 +10,10 @@ import {
   ModelStructure,
   ModelScalarFields,
   AnyRecord,
-  Find,
   BaseOption,
+  Find,
+  CountArgs,
+  Aggregate,
   ModelTypes,
 } from './models';
 
@@ -36,13 +38,13 @@ export class BaseRepository<
   }
 
   // eslint-disable-next-line class-methods-use-this
-  extractCondition(conditions: Where | number | string) {
+  private extractCondition(conditions: Cursor | Where | number | string) {
     const dbCond = _.isObject(conditions) ? conditions : { id: _.toNumber(conditions) };
 
     return dbCond;
   }
 
-  async findAll(
+  public async findAll(
     conditions: Where | number | string,
     filterQueryParams: AnyRecord = {},
     query: AnyRecord = {},
@@ -63,32 +65,36 @@ export class BaseRepository<
         ...(limit > 0 && { take: limit }),
       })) as Model[],
       /* @ts-ignore */
-      count: await this.model.count({ where }),
+      count: await this.count({ where }),
     };
   }
 
-  async findOne(
+  public async findOne(
     conditions: Where | number | string,
     option: Find<Select, Include, Cursor, Order, Scalar> = {}
   ) {
     const where = this.extractCondition(conditions);
 
     // @ts-ignore
-    return this.model.findFirst({
-      where,
-      ...option,
-    }) as Promise<Model>;
+    return this.model.findFirst({ where, ...option }) as Promise<Model>;
   }
 
-  async create(data: Create, option: BaseOption<Include, Select> = {}) {
+  public async findUnique(
+    conditions: Cursor | number | string,
+    option: BaseOption<Include, Select> = {}
+  ) {
+    const where = this.extractCondition(conditions);
+
     // @ts-ignore
-    return this.model.create({
-      data,
-      ...option,
-    }) as Promise<Model>;
+    return this.model.findUnique({ where, ...option }) as Promise<Model>;
   }
 
-  async update(
+  public async create(data: Create, option: BaseOption<Include, Select> = {}) {
+    // @ts-ignore
+    return this.model.create({ data, ...option }) as Promise<Model>;
+  }
+
+  public async update(
     conditions: Where | number | string,
     data: Update | Create,
     option: BaseOption<Include, Select> = {}
@@ -96,23 +102,24 @@ export class BaseRepository<
     const where = this.extractCondition(conditions);
 
     // @ts-ignore
-    return this.model.update({
-      data,
-      where,
-      ...option,
-    }) as Promise<Model>;
+    return this.model.update({ data, where, ...option }) as Promise<Model>;
   }
 
-  async delete(conditions: Where | number | string) {
+  public async delete(conditions: Where | number | string) {
     const where = this.extractCondition(conditions);
 
     // @ts-ignore
-    return this.model.deleteMany({
-      where,
-    }) as Promise<Prisma.BatchPayload>;
+    return this.model.deleteMany({ where }) as Promise<Prisma.BatchPayload>;
   }
 
-  async updateOrCreate(
+  public async deleteOne(conditions: Where | number | string) {
+    const where = this.extractCondition(conditions);
+
+    // @ts-ignore
+    return this.model.delete({ where }) as Promise<Model>;
+  }
+
+  public async updateOrCreate(
     conditions: Where | number | string,
     data: Create,
     option: Find<Select, Include, Cursor, Order, Scalar> = {}
@@ -124,23 +131,50 @@ export class BaseRepository<
     return this.create(data);
   }
 
-  async bulkCreate(data: Prisma.Enumerable<Create>, skipDuplicates = true) {
+  public async bulkCreate(data: Prisma.Enumerable<Create>, skipDuplicates = true) {
     // @ts-ignore
-    return this.model.createMany({
-      data,
-      skipDuplicates,
-    }) as Promise<Prisma.BatchPayload>;
+    return this.model.createMany({ data, skipDuplicates }) as Promise<Prisma.BatchPayload>;
   }
 
-  async bulkUpdate(where: Where, data: Prisma.Enumerable<Update>) {
+  public async bulkUpdate(where: Where, data: Prisma.Enumerable<Update>) {
     // @ts-ignore
-    return this.model.updateMany({
-      data,
-      where,
-    }) as Promise<Prisma.BatchPayload>;
+    return this.model.updateMany({ data, where }) as Promise<Prisma.BatchPayload>;
   }
 
-  get model(): Delegate {
+  public async count(
+    conditions: Where | number | string,
+    option: CountArgs<Select, Cursor, Order, Scalar> = {}
+  ) {
+    const where = this.extractCondition(conditions);
+
+    // @ts-ignore
+    return this.model.count({ where, ...option }) as Promise<number>;
+  }
+
+  public aggregate(
+    conditions: Where | number | string,
+    aggregator: Omit<
+      // @ts-ignore
+      Parameters<typeof this.model.aggregate>[0],
+      'cursor' | 'take' | 'skip' | 'orderBy'
+    >,
+    option: Aggregate<Cursor, Order, Scalar> = {}
+  ) {
+    // @ts-ignore
+    const aggregate = this.model.aggregate as Delegate['aggregate'];
+    const where = this.extractCondition(conditions);
+
+    if (_.isEmpty(aggregator)) {
+      // @ts-ignore
+      // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+      aggregator._count = true;
+    }
+
+    // @ts-ignore
+    return aggregate({ where, ...aggregator, ...option }) as ReturnType<typeof aggregate>;
+  }
+
+  public get model(): Delegate {
     // @ts-ignore
     return models[this.modelName];
   }
