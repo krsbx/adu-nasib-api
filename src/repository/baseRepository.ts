@@ -45,12 +45,12 @@ export class BaseRepository<
   async findAll(
     conditions: Where | number | string,
     filterQueryParams: AnyRecord = {},
-    options: AnyRecord = {},
-    include: Include = {} as Include
+    query: AnyRecord = {},
+    option: Find<Select, Include, Cursor, Order, Scalar> = {}
   ) {
-    const limit = +(options.limit === 'all' ? 0 : _.get(options, 'limit', 10));
-    const offset = options.page && options.page > 0 ? limit * (options.page - 1) : 0;
-    const otherOptions = _.omit(options, ['limit', 'offset', 'page']);
+    const limit = +(query.limit === 'all' ? 0 : _.get(query, 'limit', 10));
+    const offset = query.page && query.page > 0 ? limit * (query.page - 1) : 0;
+    const otherOptions = _.omit(query, ['limit', 'offset', 'page']);
 
     const where = { ...this.extractCondition(conditions), ...filterQueryParams, ...otherOptions };
 
@@ -58,7 +58,7 @@ export class BaseRepository<
       // @ts-ignore
       rows: (await this.model.findMany({
         where,
-        ...(!_.isEmpty(include) && { include }),
+        ...option,
         skip: offset,
         ...(limit > 0 && { take: limit }),
       })) as Model[],
