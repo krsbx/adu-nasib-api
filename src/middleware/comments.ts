@@ -67,6 +67,33 @@ export const getCommentMw = asyncMw(async (req, res, next) => {
 
   req.comment = comment;
 
+  req.comment.likes = await repository.like.comment.model.count({
+    where: {
+      commentId: comment.id,
+    },
+  });
+
+  // eslint-disable-next-line no-param-reassign
+  req.comment.dislikes = await repository.dislike.comment.model.count({
+    where: {
+      commentId: comment.id,
+    },
+  });
+
+  // eslint-disable-next-line no-param-reassign
+  req.comment.isLiked = !_.isEmpty(req.userAuth)
+    ? !!(await repository.like.comment.findOne({
+        userId: req.userAuth.id,
+      }))
+    : false;
+
+  // eslint-disable-next-line no-param-reassign
+  req.comment.isDisliked = !_.isEmpty(req.userAuth)
+    ? !!(await repository.dislike.comment.findOne({
+        userId: req.userAuth.id,
+      }))
+    : false;
+
   return next();
 });
 
@@ -83,6 +110,40 @@ export const getCommentsMw = asyncMw(async (req, res, next) => {
       createdAt: 'desc',
     },
   });
+
+  if (!_.isEmpty(req.comments) && req.comments.count > 0) {
+    await Promise.all(
+      _.map(req.comments.rows, async (comment) => {
+        // eslint-disable-next-line no-param-reassign
+        comment.likes = await repository.like.comment.model.count({
+          where: {
+            commentId: comment.id,
+          },
+        });
+
+        // eslint-disable-next-line no-param-reassign
+        comment.dislikes = await repository.dislike.comment.model.count({
+          where: {
+            commentId: comment.id,
+          },
+        });
+
+        // eslint-disable-next-line no-param-reassign
+        comment.isLiked = !_.isEmpty(req.userAuth)
+          ? !!(await repository.like.comment.findOne({
+              userId: req.userAuth.id,
+            }))
+          : false;
+
+        // eslint-disable-next-line no-param-reassign
+        comment.isDisliked = !_.isEmpty(req.userAuth)
+          ? !!(await repository.dislike.comment.findOne({
+              userId: req.userAuth.id,
+            }))
+          : false;
+      })
+    );
+  }
 
   return next();
 });
@@ -105,5 +166,47 @@ export const returnCommentsMw = asyncMw(async (req, res) => {
       }))
     ),
     count: _.get(req.comments, 'count', 0),
+  });
+});
+
+export const likeCommentMw = asyncMw(async (req, res) => {
+  const resource = {
+    commentId: req.comment.id,
+    userId: req.userAuth.id,
+  };
+
+  const like = await repository.like.comment.findOne(_.pick(resource, ['userId']));
+  const dislike = await repository.dislike.comment.findOne(_.pick(resource, ['userId']));
+
+  if (like) await repository.like.comment.delete(like.id);
+  else {
+    await repository.like.comment.create(resource);
+    if (dislike) await repository.dislike.comment.delete(dislike.id);
+  }
+
+  res.json({
+    isLiked: !like,
+    isDisliked: dislike,
+  });
+});
+
+export const dislikeCommentMw = asyncMw(async (req, res) => {
+  const resource = {
+    commentId: req.comment.id,
+    userId: req.userAuth.id,
+  };
+
+  const like = await repository.like.comment.findOne(_.pick(resource, ['userId']));
+  const dislike = await repository.dislike.comment.findOne(_.pick(resource, ['userId']));
+
+  if (dislike) await repository.dislike.comment.delete(dislike.id);
+  else {
+    await repository.dislike.comment.create(resource);
+    if (like) await repository.like.comment.delete(like.id);
+  }
+
+  res.json({
+    isLiked: like,
+    isDisliked: !dislike,
   });
 });

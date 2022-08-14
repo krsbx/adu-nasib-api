@@ -26,4 +26,10 @@ router.patch(
 // DELETE /comments/:id
 router.delete('/:id', auths.authMw, comments.getCommentMw, comments.deleteCommentMw);
 
+// POST /comments/:id/like
+router.post('/:id/like', auths.authMw, comments.getCommentMw, comments.likeCommentMw);
+
+// POST /comments/:id/dislike
+router.post('/:id/dislike', auths.authMw, comments.getCommentMw, comments.dislikeCommentMw);
+
 export default router;
