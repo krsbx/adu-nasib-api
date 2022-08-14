@@ -75,7 +75,12 @@ export const getPostsMw = asyncMw(async (req, res, next) => {
   if (req.user) condition = { userId: req.user.id };
 
   req.posts = await repository.post.findAll(condition, req.filterQueryParams, req.query, {
-    user: true,
+    include: {
+      user: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
   return next();
