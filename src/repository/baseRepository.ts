@@ -65,7 +65,7 @@ export class BaseRepository<
         ...(limit > 0 && { take: limit }),
       })) as Model[],
       /* @ts-ignore */
-      count: await this.count({ where }),
+      count: await this.count(where),
     };
   }
 

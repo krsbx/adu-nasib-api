@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "migrate": "prisma migrate dev",
     "migrate:create": "prisma migrate dev --name",
     "migrate:reset": "prisma migrate reset",
@@ -58,8 +58,9 @@
     "nodemon": "^2.0.19",
     "prettier": "^2.7.1",
     "prisma": "^4.1.1",
-    "prisma-repo": "^0.2.7",
+    "prisma-repo": "^0.2.8",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   },
   "prisma": {
