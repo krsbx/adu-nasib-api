@@ -16,7 +16,7 @@ const resourceToModel = async (resource: AnyRecord) => {
 };
 
 const modelToResource = async (model: ModelStructure['user']) => {
-  const resource = _.omit(model, ['createdAt', 'updatedAt', 'password']);
+  const resource = _.omit(model, ['updatedAt', 'password']);
 
   return resource;
 };
