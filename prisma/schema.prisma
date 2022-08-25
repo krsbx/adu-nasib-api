@@ -27,10 +27,10 @@ model User {
   profile        Profile?
   posts          Post[]
   comments       Comment[]
-  PostLike       PostLike[]
-  CommentLike    CommentLike[]
-  PostDislike    PostDislike[]
-  CommentDislike CommentDislike[]
+  postLike       PostLike[]
+  postDislike    PostDislike[]
+  commentLike    CommentLike[]
+  commentDislike CommentDislike[]
 
   @@map("users")
 }
@@ -58,8 +58,8 @@ model Post {
 
   comments    Comment[]
   user        User          @relation(fields: [userId], references: [id], onDelete: NoAction)
-  PostLike    PostLike[]
-  PostDislike PostDislike[]
+  postLike    PostLike[]
+  postDislike PostDislike[]
 
   @@map("posts")
 }
@@ -74,8 +74,8 @@ model Comment {
 
   post           Post             @relation(fields: [postId], references: [id], onDelete: NoAction)
   user           User             @relation(fields: [userId], references: [id], onDelete: NoAction)
-  CommentLike    CommentLike[]
-  CommentDislike CommentDislike[]
+  commentLike    CommentLike[]
+  commentDislike CommentDislike[]
 
   @@map("comments")
 }
