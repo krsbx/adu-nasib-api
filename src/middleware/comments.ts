@@ -4,6 +4,7 @@ import asyncMw from 'express-asyncmw';
 import repository from '../repository';
 import { handleZodError } from '../utils/errors';
 import { commentSchema } from '../utils/schema';
+import { getCommentInformations, getCommentLikeDislike } from '../scripts/comment';
 
 export const createCommentMw = asyncMw(async (req, res, next) => {
   if (!req.body.userId) req.body.userId = req.userAuth.id;
@@ -67,32 +68,7 @@ export const getCommentMw = asyncMw(async (req, res, next) => {
 
   req.comment = comment;
 
-  req.comment.likes = await repository.like.comment.model.count({
-    where: {
-      commentId: comment.id,
-    },
-  });
-
-  // eslint-disable-next-line no-param-reassign
-  req.comment.dislikes = await repository.dislike.comment.model.count({
-    where: {
-      commentId: comment.id,
-    },
-  });
-
-  // eslint-disable-next-line no-param-reassign
-  req.comment.isLiked = !_.isEmpty(req.userAuth)
-    ? !!(await repository.like.comment.findOne({
-        userId: req.userAuth.id,
-      }))
-    : false;
-
-  // eslint-disable-next-line no-param-reassign
-  req.comment.isDisliked = !_.isEmpty(req.userAuth)
-    ? !!(await repository.dislike.comment.findOne({
-        userId: req.userAuth.id,
-      }))
-    : false;
+  await getCommentInformations(req.comment, req.userAuth);
 
   return next();
 });
@@ -113,35 +89,7 @@ export const getCommentsMw = asyncMw(async (req, res, next) => {
 
   if (!_.isEmpty(req.comments) && req.comments.count > 0) {
     await Promise.all(
-      _.map(req.comments.rows, async (comment) => {
-        // eslint-disable-next-line no-param-reassign
-        comment.likes = await repository.like.comment.model.count({
-          where: {
-            commentId: comment.id,
-          },
-        });
-
-        // eslint-disable-next-line no-param-reassign
-        comment.dislikes = await repository.dislike.comment.model.count({
-          where: {
-            commentId: comment.id,
-          },
-        });
-
-        // eslint-disable-next-line no-param-reassign
-        comment.isLiked = !_.isEmpty(req.userAuth)
-          ? !!(await repository.like.comment.findOne({
-              userId: req.userAuth.id,
-            }))
-          : false;
-
-        // eslint-disable-next-line no-param-reassign
-        comment.isDisliked = !_.isEmpty(req.userAuth)
-          ? !!(await repository.dislike.comment.findOne({
-              userId: req.userAuth.id,
-            }))
-          : false;
-      })
+      _.map(req.comments.rows, async (comment) => getCommentInformations(comment, req.userAuth))
     );
   }
 
@@ -175,18 +123,19 @@ export const likeCommentMw = asyncMw(async (req, res) => {
     userId: req.userAuth.id,
   };
 
-  const like = await repository.like.comment.findOne(_.pick(resource, ['userId']));
-  const dislike = await repository.dislike.comment.findOne(_.pick(resource, ['userId']));
+  const likeDislike = await getCommentLikeDislike(resource);
 
-  if (like) await repository.like.comment.delete(like.id);
-  else {
-    await repository.like.comment.create(resource);
-    if (dislike) await repository.dislike.comment.delete(dislike.id);
+  if (likeDislike.like) await repository.like.comment.delete(likeDislike.like.id);
+  else await repository.like.comment.create(resource);
+
+  if (likeDislike.dislike) {
+    await repository.dislike.comment.delete(likeDislike.dislike.id);
+    likeDislike.dislike = null;
   }
 
-  res.json({
-    isLiked: !like,
-    isDisliked: dislike,
+  return res.json({
+    isLiked: !likeDislike.like,
+    isDisliked: !!likeDislike.dislike,
   });
 });
 
@@ -196,17 +145,18 @@ export const dislikeCommentMw = asyncMw(async (req, res) => {
     userId: req.userAuth.id,
   };
 
-  const like = await repository.like.comment.findOne(_.pick(resource, ['userId']));
-  const dislike = await repository.dislike.comment.findOne(_.pick(resource, ['userId']));
+  const likeDislike = await getCommentLikeDislike(resource);
 
-  if (dislike) await repository.dislike.comment.delete(dislike.id);
-  else {
-    await repository.dislike.comment.create(resource);
-    if (like) await repository.like.comment.delete(like.id);
+  if (likeDislike.dislike) await repository.dislike.comment.delete(likeDislike.dislike.id);
+  else await repository.dislike.comment.create(resource);
+
+  if (likeDislike.like) {
+    await repository.like.comment.delete(likeDislike.like.id);
+    likeDislike.like = null;
   }
 
-  res.json({
-    isLiked: like,
-    isDisliked: !dislike,
+  return res.json({
+    isLiked: !!likeDislike.like,
+    isDisliked: !likeDislike.dislike,
   });
 });

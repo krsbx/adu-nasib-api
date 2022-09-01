@@ -4,6 +4,7 @@ import asyncMw from 'express-asyncmw';
 import repository from '../repository';
 import { handleZodError } from '../utils/errors';
 import { postSchema } from '../utils/schema';
+import { getPostInformations, getPostLikeDislike } from '../scripts/post';
 
 export const createPostMw = asyncMw(async (req, res, next) => {
   if (!req.body.userId) req.body.userId = req.userAuth.id;
@@ -66,38 +67,7 @@ export const getPostMw = asyncMw(async (req, res, next) => {
 
   req.post = post;
 
-  req.post.replies = await repository.comment.model.count({
-    where: {
-      postId: req.post.id,
-    },
-  });
-
-  req.post.likes = await repository.like.post.model.count({
-    where: {
-      postId: post.id,
-    },
-  });
-
-  // eslint-disable-next-line no-param-reassign
-  req.post.dislikes = await repository.dislike.post.model.count({
-    where: {
-      postId: post.id,
-    },
-  });
-
-  // eslint-disable-next-line no-param-reassign
-  req.post.isLiked = !_.isEmpty(req.userAuth)
-    ? !!(await repository.like.post.findOne({
-        userId: req.userAuth.id,
-      }))
-    : false;
-
-  // eslint-disable-next-line no-param-reassign
-  req.post.isDisliked = !_.isEmpty(req.userAuth)
-    ? !!(await repository.dislike.post.findOne({
-        userId: req.userAuth.id,
-      }))
-    : false;
+  await getPostInformations(req.post, req.userAuth);
 
   return next();
 });
@@ -118,42 +88,7 @@ export const getPostsMw = asyncMw(async (req, res, next) => {
 
   if (!_.isEmpty(req.posts) && req.posts.count > 0) {
     await Promise.all(
-      _.map(req.posts.rows, async (post) => {
-        // eslint-disable-next-line no-param-reassign
-        post.replies = await repository.comment.model.count({
-          where: {
-            postId: post.id,
-          },
-        });
-
-        // eslint-disable-next-line no-param-reassign
-        post.likes = await repository.like.post.model.count({
-          where: {
-            postId: post.id,
-          },
-        });
-
-        // eslint-disable-next-line no-param-reassign
-        post.dislikes = await repository.dislike.post.model.count({
-          where: {
-            postId: post.id,
-          },
-        });
-
-        // eslint-disable-next-line no-param-reassign
-        post.isLiked = !_.isEmpty(req.userAuth)
-          ? !!(await repository.like.post.findOne({
-              userId: req.userAuth.id,
-            }))
-          : false;
-
-        // eslint-disable-next-line no-param-reassign
-        post.isDisliked = !_.isEmpty(req.userAuth)
-          ? !!(await repository.dislike.post.findOne({
-              userId: req.userAuth.id,
-            }))
-          : false;
-      })
+      _.map(req.posts.rows, async (post) => getPostInformations(post, req.userAuth))
     );
   }
 
@@ -187,19 +122,19 @@ export const likePostMw = asyncMw(async (req, res) => {
     userId: req.userAuth.id,
   };
 
-  const like = await repository.like.post.findOne(_.pick(resource, ['userId']));
-  const dislike = await repository.dislike.post.findOne(_.pick(resource, ['userId']));
+  const likeDislike = await getPostLikeDislike(resource);
 
-  if (like) await repository.like.post.delete(like.id);
-  else {
-    await repository.like.post.create(resource);
+  if (likeDislike.like) await repository.like.post.delete(likeDislike.like.id);
+  else await repository.like.post.create(resource);
 
-    if (dislike) await repository.dislike.post.delete(dislike.id);
+  if (likeDislike.dislike) {
+    await repository.dislike.post.delete(likeDislike.dislike.id);
+    likeDislike.dislike = null;
   }
 
-  res.json({
-    isLiked: !like,
-    isDisliked: dislike,
+  return res.json({
+    isLiked: !likeDislike.like,
+    isDisliked: !!likeDislike.dislike,
   });
 });
 
@@ -209,18 +144,18 @@ export const dislikePostMw = asyncMw(async (req, res) => {
     userId: req.userAuth.id,
   };
 
-  const like = await repository.like.post.findOne(_.pick(resource, ['userId']));
-  const dislike = await repository.dislike.post.findOne(_.pick(resource, ['userId']));
+  const likeDislike = await getPostLikeDislike(resource);
 
-  if (dislike) await repository.dislike.post.delete(dislike.id);
-  else {
-    await repository.dislike.post.create(resource);
+  if (likeDislike.dislike) await repository.dislike.post.delete(likeDislike.dislike.id);
+  else await repository.dislike.post.create(resource);
 
-    if (like) await repository.like.post.delete(like.id);
+  if (likeDislike.like) {
+    await repository.like.post.delete(likeDislike.like.id);
+    likeDislike.like = null;
   }
 
-  res.json({
-    isLiked: like,
-    isDisliked: !dislike,
+  return res.json({
+    isLiked: !!likeDislike.like,
+    isDisliked: !likeDislike.dislike,
   });
 });

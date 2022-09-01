@@ -5,7 +5,7 @@ import * as auths from '../middleware/auths';
 const router = Router();
 
 // POST /posts
-router.post('/', auths.authMw, posts.createPostMw, posts.returnPostMw);
+router.post('/', auths.verifyTokenMw, auths.verifyAuthMw, posts.createPostMw, posts.returnPostMw);
 
 // GET /posts
 router.get('/', posts.getPostsMw, posts.returnPostsMw);
@@ -16,7 +16,8 @@ router.get('/:id', posts.getPostMw, posts.returnPostMw);
 // PATCH /posts/:id
 router.patch(
   '/:id',
-  auths.authMw,
+  auths.verifyTokenMw,
+  auths.verifyAuthMw,
   posts.getPostMw,
   posts.updatePostMw,
   posts.getPostMw,
@@ -24,12 +25,24 @@ router.patch(
 );
 
 // DELETE /posts/:id
-router.delete('/:id', auths.authMw, posts.getPostMw, posts.deletePostMw);
+router.delete('/:id', auths.verifyTokenMw, auths.verifyAuthMw, posts.getPostMw, posts.deletePostMw);
 
 // POST /posts/:id/like
-router.post('/:id/like', auths.authMw, posts.getPostMw, posts.likePostMw);
+router.post(
+  '/:id/like',
+  auths.verifyTokenMw,
+  auths.verifyAuthMw,
+  posts.getPostMw,
+  posts.likePostMw
+);
 
 // POST /posts/:id/dislike
-router.post('/:id/dislike', auths.authMw, posts.getPostMw, posts.dislikePostMw);
+router.post(
+  '/:id/dislike',
+  auths.verifyTokenMw,
+  auths.verifyAuthMw,
+  posts.getPostMw,
+  posts.dislikePostMw
+);
 
 export default router;

@@ -5,22 +5,31 @@ import { signAccessToken, verifyAccessToken } from '../utils/token';
 import { USER_ROLE } from '../utils/constant';
 import { compareText } from '../utils/encryption';
 
-export const authMw = asyncMw(async (req, res, next) => {
-  if (!req.headers.authorization) return res.status(401).json({ message: 'Unauthorized' });
+export const verifyTokenMw = asyncMw(async (req, res, next) => {
+  if (!req.headers.authorization) return next();
 
   const authHeader = req.headers.authorization;
   const bearerToken = authHeader && authHeader.split(' ')[1];
 
-  const isVerifiedToken = await verifyAccessToken(bearerToken);
+  const isTokenVerified = await verifyAccessToken(bearerToken);
+  req.isTokenVerified = isTokenVerified;
 
-  if (!isVerifiedToken) res.status(400).json({ message: 'Invalid token' });
+  if (!isTokenVerified) return next();
 
-  const user = await repository.user.findOne(isVerifiedToken.id);
+  const user = await repository.user.findOne(isTokenVerified.id);
 
-  if (!user) return res.status(400).json({ message: 'Invalid token' });
+  if (!user) return next();
 
   req.userAuth = user;
   req.isAdmin = req.userAuth.role === USER_ROLE.ADMIN;
+
+  return next();
+});
+
+export const verifyAuthMw = asyncMw(async (req, res, next) => {
+  if (!req.headers.authorization) return res.status(401).json({ message: 'Unauthorized' });
+
+  if (!req.isTokenVerified) res.status(400).json({ message: 'Invalid token' });
 
   return next();
 });

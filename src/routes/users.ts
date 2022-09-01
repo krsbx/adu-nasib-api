@@ -18,7 +18,8 @@ router.get('/:id', users.getUserMw, users.returnUserMw);
 // PATCH /users/:id
 router.patch(
   '/:id',
-  auths.authMw,
+  auths.verifyTokenMw,
+  auths.verifyAuthMw,
   users.getUserMw,
   users.updateUserMw,
   users.getUserMw,
@@ -26,7 +27,7 @@ router.patch(
 );
 
 // DELETE /users/:id
-router.delete('/:id', auths.authMw, users.deleteUserMw);
+router.delete('/:id', auths.verifyTokenMw, auths.verifyAuthMw, users.deleteUserMw);
 
 // All /users/:id/posts
 router.use('/:id/posts', users.getUserMw, posts);
