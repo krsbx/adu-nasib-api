@@ -18,12 +18,10 @@ jobs:
           username: adu-nasib
           password: ${{ secrets.ROOT_PASSWORD }}
           script: |
-            sudo su
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             node --version
             pwd
-            cd ~
             pm2 stop all && pm2 delete all
             cd adu-nasib-api && git fetch && git reset --hard origin/main
             npm install
