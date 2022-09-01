@@ -24,6 +24,7 @@ jobs:
             pwd
             pm2 stop all && pm2 delete all
             cd adu-nasib-api && git fetch && git reset --hard origin/main
+            rm -rf dist
             npm install
             npm run migrate
             npm run build
