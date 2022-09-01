@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { expand } from 'dotenv-expand';
 import express from 'express';
+import { server } from './utils/server';
 import root from './utils/root';
 
 const envConfig = config();
@@ -10,5 +11,4 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 root(app);
-
-app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
+server(app, +PORT);

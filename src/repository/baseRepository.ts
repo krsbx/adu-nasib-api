@@ -76,7 +76,7 @@ export class BaseRepository<
     const where = this.extractCondition(conditions);
 
     // @ts-ignore
-    return this.model.findFirst({ where, ...option }) as Promise<Model>;
+    return this.model.findFirst({ where, ...option }) as Promise<Model | null>;
   }
 
   public async findUnique(
@@ -86,7 +86,7 @@ export class BaseRepository<
     const where = this.extractCondition(conditions);
 
     // @ts-ignore
-    return this.model.findUnique({ where, ...option }) as Promise<Model>;
+    return this.model.findUnique({ where, ...option }) as Promise<Model | null>;
   }
 
   public async create(data: Create, option: BaseOption<Include, Select> = {}) {
