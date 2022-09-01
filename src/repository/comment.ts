@@ -16,17 +16,17 @@ const modelToResource = async (model: ModelStructure['comment']) => {
   return model;
 };
 
-const getCommentLikes = async (commentId: number) =>
+const getLikes = async (commentId: number) =>
   commentLike.count({
     commentId,
   });
 
-const getCommentDislikes = async (commentId: number) =>
+const getDislikes = async (commentId: number) =>
   commentDislike.count({
     commentId,
   });
 
-const getCommentLikeStatus = async (commentId: number, userId: number) =>
+const getLikeStatus = async (commentId: number, userId: number) =>
   !_.isEmpty(
     await commentLike.findOne({
       commentId,
@@ -34,7 +34,7 @@ const getCommentLikeStatus = async (commentId: number, userId: number) =>
     })
   );
 
-const getCommentDislikeStatus = async (commentId: number, userId: number) =>
+const getDislikeStatus = async (commentId: number, userId: number) =>
   !_.isEmpty(
     await commentDislike.findOne({
       commentId,
@@ -45,10 +45,10 @@ const getCommentDislikeStatus = async (commentId: number, userId: number) =>
 const extendCommentRepository = {
   modelToResource,
   resourceToModel,
-  getCommentLikes,
-  getCommentDislikes,
-  getCommentLikeStatus,
-  getCommentDislikeStatus,
+  getLikes,
+  getDislikes,
+  getLikeStatus,
+  getDislikeStatus,
 };
 
 const repository = _.merge(commentRepository, extendCommentRepository);

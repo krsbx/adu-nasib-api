@@ -4,7 +4,11 @@ import asyncMw from 'express-asyncmw';
 import repository from '../repository';
 import { handleZodError } from '../utils/errors';
 import { commentSchema } from '../utils/schema';
-import { getCommentInformations, getCommentLikeDislike } from '../scripts/comment';
+import {
+  getCommentInformations,
+  getCommentLikeDislike,
+  getCommentLikeDislikeCount,
+} from '../scripts/comment';
 
 export const createCommentMw = asyncMw(async (req, res, next) => {
   if (!req.body.userId) req.body.userId = req.userAuth.id;
@@ -133,9 +137,12 @@ export const likeCommentMw = asyncMw(async (req, res) => {
     likeDislike.dislike = null;
   }
 
+  const likesDislikes = await getCommentLikeDislikeCount(req.comment);
+
   return res.json({
     isLiked: !likeDislike.like,
     isDisliked: !!likeDislike.dislike,
+    ...likesDislikes,
   });
 });
 
@@ -155,8 +162,11 @@ export const dislikeCommentMw = asyncMw(async (req, res) => {
     likeDislike.like = null;
   }
 
+  const likesDislikes = await getCommentLikeDislikeCount(req.comment);
+
   return res.json({
     isLiked: !!likeDislike.like,
     isDisliked: !likeDislike.dislike,
+    ...likesDislikes,
   });
 });
