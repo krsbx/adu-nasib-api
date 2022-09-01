@@ -73,6 +73,6 @@ jobs:
             rm -rf ~/adu-nasib-api/dist && echo "dist directory removed."
             npm install
             npm run migrate
-            unzip -o ~/adu-nasib-app/release.zip -d ~/adu-nasib-app
+            unzip -o ~/adu-nasib-api/release.zip -d ~/adu-nasib-api
             cd ~
             pm2 start ecosystem.config.js
