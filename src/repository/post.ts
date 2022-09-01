@@ -16,17 +16,17 @@ const modelToResource = async (model: ModelStructure['post']) => {
   return model;
 };
 
-const getPostLikes = async (postId: number) =>
+const getLikes = async (postId: number) =>
   postLike.count({
     postId,
   });
 
-const getPostDislikes = async (postId: number) =>
+const getDislikes = async (postId: number) =>
   postDislike.count({
     postId,
   });
 
-const getPostLikeStatus = async (postId: number, userId: number) =>
+const getLikeStatus = async (postId: number, userId: number) =>
   !_.isEmpty(
     await postLike.findOne({
       postId,
@@ -34,7 +34,7 @@ const getPostLikeStatus = async (postId: number, userId: number) =>
     })
   );
 
-const getPostDislikeStatus = async (postId: number, userId: number) =>
+const getDislikeStatus = async (postId: number, userId: number) =>
   !_.isEmpty(
     await postDislike.findOne({
       postId,
@@ -45,10 +45,10 @@ const getPostDislikeStatus = async (postId: number, userId: number) =>
 const extendPostRepository = {
   modelToResource,
   resourceToModel,
-  getPostLikes,
-  getPostDislikes,
-  getPostLikeStatus,
-  getPostDislikeStatus,
+  getLikes,
+  getDislikes,
+  getLikeStatus,
+  getDislikeStatus,
 };
 
 const repository = _.merge(postRepository, extendPostRepository);
