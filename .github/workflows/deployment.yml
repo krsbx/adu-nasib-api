@@ -18,10 +18,10 @@ jobs:
           username: adu-nasib
           password: ${{ secrets.ROOT_PASSWORD }}
           script: |
+            sudo su
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             node --version
-            sudo su
             pwd
             cd ~
             pm2 stop all && pm2 delete all
