@@ -1,0 +1,33 @@
+name: deployment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: 'Deploy to Productions'
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: deploy
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.CLOUD_HOST }}
+          username: adu-nasib
+          password: ${{ secrets.ROOT_PASSWORD }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            node --version
+            sudo su
+            pwd
+            cd ~
+            pm2 stop all && pm2 delete all
+            cd adu-nasib-api && git fetch && git reset --hard origin/main
+            npm install
+            npm run migrate
+            npm run build
+            cd ~
+            pm2 start ecosystem.config.js
