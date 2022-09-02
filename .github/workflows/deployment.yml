@@ -68,11 +68,11 @@ jobs:
             source ~/.nvm/nvm.sh
             node --version
             pwd
-            pm2 stop all && pm2 delete all
+            pm2 stop api && pm2 reset api
             cd adu-nasib-api && git fetch && git reset --hard origin/main
             rm -rf ~/adu-nasib-api/dist && echo "dist directory removed."
             npm install
             npm run migrate
             unzip -o ~/adu-nasib-api/release.zip -d ~/adu-nasib-api
             cd ~
-            pm2 start ecosystem.config.js
+            pm2 start api
