@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import BadwordFilter from 'badwords-ts';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 import commentLike from './commentLike';
 import commentDislike from './commentDislike';
@@ -8,6 +9,8 @@ const commentRepository = factory(MODELS_NAME.COMMENT);
 
 const resourceToModel = async (resource: AnyRecord) => {
   const model = _.pick(resource, ['content', 'postId', 'userId']);
+
+  if (model.content) model.content = BadwordFilter.instance.clean(model.content);
 
   return model;
 };
