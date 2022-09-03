@@ -3,6 +3,7 @@ import { expand } from 'dotenv-expand';
 import express from 'express';
 import { server } from './utils/server';
 import root from './utils/root';
+import { badWordScheduler } from './scheduler/badwords';
 
 const envConfig = config();
 expand(envConfig);
@@ -12,3 +13,5 @@ const PORT = process.env.PORT || 3000;
 
 root(app);
 server(app, +PORT);
+
+badWordScheduler();
