@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { hashText } from '../utils/encryption';
-import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 import factory from './baseRepository';
+import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 
 const userRepository = factory(MODELS_NAME.USER);
 

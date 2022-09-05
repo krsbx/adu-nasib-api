@@ -1,11 +1,11 @@
-import user from './user';
-import profile from './profile';
-import post from './post';
 import comment from './comment';
-import postLike from './postLike';
-import commentLike from './commentLike';
-import postDislike from './postDislike';
 import commentDislike from './commentDislike';
+import commentLike from './commentLike';
+import post from './post';
+import postDislike from './postDislike';
+import postLike from './postLike';
+import profile from './profile';
+import user from './user';
 
 const repository = {
   user,

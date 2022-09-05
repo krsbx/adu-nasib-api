@@ -1,9 +1,9 @@
 import { config } from 'dotenv';
 import { expand } from 'dotenv-expand';
 import express from 'express';
-import { server } from './utils/server';
-import root from './utils/root';
 import { badWordScheduler } from './scheduler/badwords';
+import root from './utils/root';
+import { server } from './utils/server';
 
 const envConfig = config();
 expand(envConfig);

@@ -1,9 +1,9 @@
-import _ from 'lodash';
 import BadwordFilter from 'badwords-ts';
-import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import postLike from './postLike';
-import postDislike from './postDislike';
+import _ from 'lodash';
 import factory from './baseRepository';
+import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
+import postDislike from './postDislike';
+import postLike from './postLike';
 
 const postRepository = factory(MODELS_NAME.POST);
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as posts from '../middleware/posts';
 import * as auths from '../middleware/auths';
+import * as posts from '../middleware/posts';
 
 const router = Router();
 

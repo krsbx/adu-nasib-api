@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import type { Response } from 'express';
+import _ from 'lodash';
 import type { ZodError } from 'zod';
 
 export const handleZodError = (err: ZodError, res: Response) => {

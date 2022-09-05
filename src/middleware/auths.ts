@@ -1,9 +1,9 @@
-import _ from 'lodash';
 import asyncMw from 'express-asyncmw';
+import _ from 'lodash';
 import repository from '../repository';
-import { signAccessToken, verifyAccessToken } from '../utils/token';
 import { USER_ROLE } from '../utils/constant';
 import { compareText } from '../utils/encryption';
+import { signAccessToken, verifyAccessToken } from '../utils/token';
 
 export const verifyTokenMw = asyncMw(async (req, res, next) => {
   if (!req.headers.authorization) return next();

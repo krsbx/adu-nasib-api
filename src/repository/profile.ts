@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 import factory from './baseRepository';
+import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 
 const profileRepository = factory(MODELS_NAME.PROFILE);
 

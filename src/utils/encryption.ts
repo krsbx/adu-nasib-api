@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import bcrypt from 'bcrypt';
+import _ from 'lodash';
 
 const SALT_ROUND = _.toNumber(_.get(process.env, 'SALT'));
 
