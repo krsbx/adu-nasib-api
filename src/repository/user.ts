@@ -1,31 +1,24 @@
 import _ from 'lodash';
 import { hashText } from '../utils/encryption';
-import factory from './baseRepository';
+import BaseRepository from './baseRepository';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 
-const userRepository = factory(MODELS_NAME.USER);
+class User extends BaseRepository(MODELS_NAME.USER) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['username', 'email', 'password', 'role']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['username', 'email', 'password', 'role']);
+    if (model.password) {
+      model.password = await hashText(model.password);
+    }
 
-  if (model.password) {
-    model.password = await hashText(model.password);
+    return model;
   }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['user']) {
+    const resource = _.omit(model, ['updatedAt', 'password']);
 
-const modelToResource = async (model: ModelStructure['user']) => {
-  const resource = _.omit(model, ['updatedAt', 'password']);
+    return resource;
+  }
+}
 
-  return resource;
-};
-
-const extendUserRepository = {
-  modelToResource,
-  resourceToModel,
-};
-
-const repository = _.merge(userRepository, extendUserRepository);
-
-export default repository;
+export default User;
