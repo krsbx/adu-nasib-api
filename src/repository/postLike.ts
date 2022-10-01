@@ -1,24 +1,17 @@
 import _ from 'lodash';
+import BaseRepository from './baseRepository';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import factory from './baseRepository';
 
-const postLikeRepository = factory(MODELS_NAME.POST_LIKE);
+class PostLikeRepository extends BaseRepository(MODELS_NAME.POST_LIKE) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['postId', 'userId']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['postId', 'userId']);
+    return model;
+  }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['postLike']) {
+    return model;
+  }
+}
 
-const modelToResource = async (model: ModelStructure['postLike']) => {
-  return model;
-};
-
-const extendPostLikeRepository = {
-  modelToResource,
-  resourceToModel,
-};
-
-const repository = _.merge(postLikeRepository, extendPostLikeRepository);
-
-export default repository;
+export default PostLikeRepository;

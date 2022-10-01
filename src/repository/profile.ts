@@ -1,24 +1,17 @@
 import _ from 'lodash';
+import BaseRepository from './baseRepository';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import factory from './baseRepository';
 
-const profileRepository = factory(MODELS_NAME.PROFILE);
+class ProfileRepository extends BaseRepository(MODELS_NAME.PROFILE) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['firstname', 'middlename', 'lastname', 'userId']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['firstname', 'middlename', 'lastname', 'userId']);
+    return model;
+  }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['profile']) {
+    return model;
+  }
+}
 
-const modelToResource = async (model: ModelStructure['profile']) => {
-  return model;
-};
-
-const extendProfileRepository = {
-  modelToResource,
-  resourceToModel,
-};
-
-const repository = _.merge(profileRepository, extendProfileRepository);
-
-export default repository;
+export default ProfileRepository;

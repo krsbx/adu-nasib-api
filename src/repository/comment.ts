@@ -1,59 +1,52 @@
-import _ from 'lodash';
 import BadwordFilter from 'badwords-ts';
-import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import commentLike from './commentLike';
+import _ from 'lodash';
+import BaseRepository from './baseRepository';
 import commentDislike from './commentDislike';
-import factory from './baseRepository';
+import commentLike from './commentLike';
+import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
 
-const commentRepository = factory(MODELS_NAME.COMMENT);
+class Comment extends BaseRepository(MODELS_NAME.COMMENT) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['content', 'postId', 'userId']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['content', 'postId', 'userId']);
+    if (model.content) model.content = BadwordFilter.instance.clean(model.content);
 
-  if (model.content) model.content = BadwordFilter.instance.clean(model.content);
+    return model;
+  }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['comment']) {
+    return model;
+  }
 
-const modelToResource = async (model: ModelStructure['comment']) => {
-  return model;
-};
-
-const getLikes = async (commentId: number) =>
-  commentLike.count({
-    commentId,
-  });
-
-const getDislikes = async (commentId: number) =>
-  commentDislike.count({
-    commentId,
-  });
-
-const getLikeStatus = async (commentId: number, userId: number) =>
-  !_.isEmpty(
-    await commentLike.findOne({
+  public static async getLikes(commentId: number) {
+    return commentLike.count({
       commentId,
-      userId,
-    })
-  );
+    });
+  }
 
-const getDislikeStatus = async (commentId: number, userId: number) =>
-  !_.isEmpty(
-    await commentDislike.findOne({
+  public static async getDislikes(commentId: number) {
+    return commentDislike.count({
       commentId,
-      userId,
-    })
-  );
+    });
+  }
 
-const extendCommentRepository = {
-  modelToResource,
-  resourceToModel,
-  getLikes,
-  getDislikes,
-  getLikeStatus,
-  getDislikeStatus,
-};
+  public static async getLikeStatus(commentId: number, userId: number) {
+    return !_.isEmpty(
+      await commentLike.findOne({
+        commentId,
+        userId,
+      })
+    );
+  }
 
-const repository = _.merge(commentRepository, extendCommentRepository);
+  public static async getDislikeStatus(commentId: number, userId: number) {
+    return !_.isEmpty(
+      await commentDislike.findOne({
+        commentId,
+        userId,
+      })
+    );
+  }
+}
 
-export default repository;
+export default Comment;

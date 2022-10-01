@@ -1,24 +1,17 @@
 import _ from 'lodash';
+import BaseRepository from './baseRepository';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import factory from './baseRepository';
 
-const commentDislikeRepository = factory(MODELS_NAME.COMMENT_DISLIKE);
+class CommentDislikeRepository extends BaseRepository(MODELS_NAME.COMMENT_DISLIKE) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['commentId', 'userId']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['commentId', 'userId']);
+    return model;
+  }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['commentDislike']) {
+    return model;
+  }
+}
 
-const modelToResource = async (model: ModelStructure['commentLike']) => {
-  return model;
-};
-
-const extendCommentDislikeRepository = {
-  modelToResource,
-  resourceToModel,
-};
-
-const repository = _.merge(commentDislikeRepository, extendCommentDislikeRepository);
-
-export default repository;
+export default CommentDislikeRepository;

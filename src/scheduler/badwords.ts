@@ -1,6 +1,6 @@
+import BadwordFilter from 'badwords-ts';
 import moment from 'moment';
 import scheduler from 'node-schedule';
-import BadwordFilter from 'badwords-ts';
 import { SCHEDULE_NAME } from '../utils/constant';
 
 export const badWordScheduler = async () => {

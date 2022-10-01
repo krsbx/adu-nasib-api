@@ -11,3 +11,8 @@ export const SERVER_MODE = {
 export const SCHEDULE_NAME = {
   BADWORD_DOWNLOADER_LOADER: 'BADWORD-DOWNLOADER-LOADER',
 } as const;
+
+export const REQUEST_STATUS = {
+  SUCCESS: 'success',
+  FAILED: 'failed',
+} as const;

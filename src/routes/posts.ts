@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as posts from '../middleware/posts';
 import * as auths from '../middleware/auths';
+import * as posts from '../middleware/posts';
 
 const router = Router();
 
@@ -8,10 +8,10 @@ const router = Router();
 router.post('/', auths.verifyTokenMw, auths.verifyAuthMw, posts.createPostMw, posts.returnPostMw);
 
 // GET /posts
-router.get('/', posts.getPostsMw, posts.returnPostsMw);
+router.get('/', auths.verifyTokenMw, posts.getPostsMw, posts.returnPostsMw);
 
 // GET /posts/:id
-router.get('/:id', posts.getPostMw, posts.returnPostMw);
+router.get('/:id', auths.verifyTokenMw, posts.getPostMw, posts.returnPostMw);
 
 // PATCH /posts/:id
 router.patch(

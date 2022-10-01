@@ -1,6 +1,6 @@
+import asyncMw from 'express-asyncmw';
 import _ from 'lodash';
 import { ZodError } from 'zod';
-import asyncMw from 'express-asyncmw';
 import repository from '../repository';
 import { handleZodError } from '../utils/errors';
 import { userSchema } from '../utils/schema';

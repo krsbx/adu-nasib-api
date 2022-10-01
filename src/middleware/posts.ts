@@ -1,10 +1,10 @@
+import asyncMw from 'express-asyncmw';
 import _ from 'lodash';
 import { ZodError } from 'zod';
-import asyncMw from 'express-asyncmw';
 import repository from '../repository';
+import { getPostInformations, getPostLikeDislike, getPostLikeDislikeCount } from '../scripts/post';
 import { handleZodError } from '../utils/errors';
 import { postSchema } from '../utils/schema';
-import { getPostInformations, getPostLikeDislike, getPostLikeDislikeCount } from '../scripts/post';
 
 export const createPostMw = asyncMw(async (req, res, next) => {
   if (!req.body.userId) req.body.userId = req.userAuth.id;

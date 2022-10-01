@@ -1,8 +1,8 @@
 import os from 'os';
 import cluster from 'cluster';
-import { Express } from 'express';
+import { Express, NextFunction, Request, Response } from 'express';
 import { SERVER_MODE } from './constant';
-import { jsonManipulator } from '../config/json';
+import { changeSendResponse } from '../config/json';
 
 const N_CPU = os.cpus().length;
 
@@ -29,12 +29,12 @@ export const getCPUToUse = () => {
   return nCPUToUse;
 };
 
-export const useJSONManipulator = (app: Express) => {
+export const jsonManipulator = () => (req: Request, res: Response, next: NextFunction) => {
   const nCPU = getCPUToUse();
 
-  if (nCPU === 1) return;
+  if (nCPU === 1) return next();
 
-  app.use(jsonManipulator);
+  return changeSendResponse(req, res, next);
 };
 
 const spawnServer = (app: Express, port: number, nCPU: number) => {

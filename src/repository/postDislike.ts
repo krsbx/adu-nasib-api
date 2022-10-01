@@ -1,24 +1,17 @@
 import _ from 'lodash';
+import BaseRepository from './baseRepository';
 import { AnyRecord, ModelStructure, MODELS_NAME } from './models';
-import factory from './baseRepository';
 
-const postDislikeRepository = factory(MODELS_NAME.POST_DISLIKE);
+class PostDislikeRepository extends BaseRepository(MODELS_NAME.POST_DISLIKE) {
+  public static async resourceToModel(resource: AnyRecord) {
+    const model = _.pick(resource, ['postId', 'userId']);
 
-const resourceToModel = async (resource: AnyRecord) => {
-  const model = _.pick(resource, ['postId', 'userId']);
+    return model;
+  }
 
-  return model;
-};
+  public static async modelToResource(model: ModelStructure['postDislike']) {
+    return model;
+  }
+}
 
-const modelToResource = async (model: ModelStructure['postLike']) => {
-  return model;
-};
-
-const extendPostDislikeRepository = {
-  modelToResource,
-  resourceToModel,
-};
-
-const repository = _.merge(postDislikeRepository, extendPostDislikeRepository);
-
-export default repository;
+export default PostDislikeRepository;

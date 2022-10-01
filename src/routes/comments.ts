@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as comments from '../middleware/comments';
 import * as auths from '../middleware/auths';
+import * as comments from '../middleware/comments';
 
 const router = Router();
 

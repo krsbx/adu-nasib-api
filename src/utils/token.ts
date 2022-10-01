@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import jwtToken from 'jsonwebtoken';
+import _ from 'lodash';
 
 const jwtSecret = _.get(process.env, 'JWT_SECRET');
 

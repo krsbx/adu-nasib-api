@@ -1,14 +1,14 @@
+import asyncMw from 'express-asyncmw';
 import _ from 'lodash';
 import { ZodError } from 'zod';
-import asyncMw from 'express-asyncmw';
 import repository from '../repository';
-import { handleZodError } from '../utils/errors';
-import { commentSchema } from '../utils/schema';
 import {
   getCommentInformations,
   getCommentLikeDislike,
   getCommentLikeDislikeCount,
 } from '../scripts/comment';
+import { handleZodError } from '../utils/errors';
+import { commentSchema } from '../utils/schema';
 
 export const createCommentMw = asyncMw(async (req, res, next) => {
   if (!req.body.userId) req.body.userId = req.userAuth.id;

@@ -1,16 +1,18 @@
 import cors from 'cors';
 import express, { Express } from 'express';
-import routes from '../routes';
+import { errorHandling } from '../config/error';
 import { queryParserMw } from '../middleware/queryParser';
-import { useJSONManipulator } from './server';
+import routes from '../routes';
+import { jsonManipulator } from './server';
 
 export default (app: Express) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static('public'));
   app.use(cors());
-  useJSONManipulator(app);
+  app.use(jsonManipulator());
 
   app.get('*', queryParserMw);
   app.use(routes);
+  app.use(errorHandling);
 };
