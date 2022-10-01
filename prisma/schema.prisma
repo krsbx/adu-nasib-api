@@ -57,7 +57,7 @@ model Post {
   updatedAt DateTime @updatedAt
 
   comments    Comment[]
-  user        User          @relation(fields: [userId], references: [id], onDelete: NoAction)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   postLike    PostLike[]
   postDislike PostDislike[]
 
@@ -72,8 +72,8 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post           Post             @relation(fields: [postId], references: [id], onDelete: NoAction)
-  user           User             @relation(fields: [userId], references: [id], onDelete: NoAction)
+  post           Post             @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   commentLike    CommentLike[]
   commentDislike CommentDislike[]
 
@@ -87,8 +87,8 @@ model PostLike {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post Post @relation(fields: [postId], references: [id], onDelete: NoAction)
-  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("post-likes")
 }
@@ -100,8 +100,8 @@ model CommentLike {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comment Comment @relation(fields: [commentId], references: [id], onDelete: NoAction)
-  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comment-likes")
 }
@@ -113,8 +113,8 @@ model PostDislike {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post Post @relation(fields: [postId], references: [id], onDelete: NoAction)
-  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("post-dislikes")
 }
@@ -126,8 +126,8 @@ model CommentDislike {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comment Comment @relation(fields: [commentId], references: [id], onDelete: NoAction)
-  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comment-dislikes")
 }
