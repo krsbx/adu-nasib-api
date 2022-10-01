@@ -70,11 +70,11 @@ jobs:
             pwd
             pm2 stop api && pm2 reset api
             cd adu-nasib-api && git fetch && git reset --hard origin/main
-            [ -d ~/adu-nasib-api/dist/public ] && echo echo copying ~/adu-nasib-api/dist/public ..." && cp ~/adu-nasib-api/dist/public ~/adu-nasib-api/public
+            [ -d ~/adu-nasib-api/dist/public ] && echo echo copying ~/adu-nasib-api/dist/public ..." && mv ~/adu-nasib-api/dist/public ~/adu-nasib-api/public
             rm -rf ~/adu-nasib-api/dist && echo "dist directory removed."
             npm install
             npm run migrate
             unzip -o ~/adu-nasib-api/release.zip -d ~/adu-nasib-api
-            [ -d ~/adu-nasib-api/public ] && echo echo "restoring ~/adu-nasib-api/public ..." && cp ~/adu-nasib-api/dist/public ~/adu-nasib-api/dist/public
+            [ -d ~/adu-nasib-api/public ] && echo echo "restoring ~/adu-nasib-api/public ..." && mv ~/adu-nasib-api/public ~/adu-nasib-api/dist/public
             cd ~
             pm2 start api
